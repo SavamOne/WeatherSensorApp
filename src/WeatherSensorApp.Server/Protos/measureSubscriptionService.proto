@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "WeatherSensorApp.Server";
+
+import "google/protobuf/timestamp.proto";
+
+service MeasureSubscriptionService {
+  rpc StreamMeasures(stream MeasureRequest) returns (stream MeasureResponse);
+}
+
+message MeasureRequest {
+  string sensorId = 1;
+  bool subscribe = 2;
+}
+
+message MeasureResponse {
+  string sensorId = 1;
+  google.protobuf.Timestamp time = 2;
+  double temperature = 3;
+  int32 humidity = 4;
+  int32 co2 = 5;
+}

@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherSensorApp.Server", "src\WeatherSensorApp.Server\WeatherSensorApp.Server.csproj", "{9D64F9F3-E81A-45DB-98D2-3FB05DD1D490}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherSensorApp.Server.Business", "src\WeatherSensorApp.Server.Business\WeatherSensorApp.Server.Business.csproj", "{EE22B6F6-56E5-420D-8343-038E8B58C3E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{9D64F9F3-E81A-45DB-98D2-3FB05DD1D490}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D64F9F3-E81A-45DB-98D2-3FB05DD1D490}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D64F9F3-E81A-45DB-98D2-3FB05DD1D490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE22B6F6-56E5-420D-8343-038E8B58C3E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE22B6F6-56E5-420D-8343-038E8B58C3E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE22B6F6-56E5-420D-8343-038E8B58C3E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE22B6F6-56E5-420D-8343-038E8B58C3E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
