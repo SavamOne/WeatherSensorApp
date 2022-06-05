@@ -20,13 +20,15 @@ public class BackgroundMeasureService : BackgroundService
 
 		while (!stoppingToken.IsCancellationRequested)
 		{
+			Task delay = Task.Delay(2000, stoppingToken);
+			
 			foreach (Sensor sensor in sensors)
 			{
 				Measure randomMeasure = MeasureGenerator.GenerateRandom(sensor.Id);
 				measureService.OnNewMeasure(randomMeasure);
 			}
-
-			await Task.Delay(2000, stoppingToken);
+			
+			await delay;
 		}
 	}
 }

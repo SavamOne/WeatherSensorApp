@@ -1,4 +1,5 @@
-﻿using WeatherSensorApp.Server.Business.Contracts;
+﻿using Microsoft.Extensions.Logging;
+using WeatherSensorApp.Server.Business.Contracts;
 using WeatherSensorApp.Server.Business.Storages;
 
 namespace WeatherSensorApp.Server.Business.Services.Implementations;
@@ -15,11 +16,13 @@ public class MeasureService : IMeasureService
 	}.ToDictionary(x => x.Id);
 
 	private readonly IMeasureSubscriptionStore subscriptionStore;
+	private readonly ILogger<MeasureService> logger;
 
-	public MeasureService(ILastMeasureStore lastMeasureStore, IMeasureSubscriptionStore subscriptionStore)
+	public MeasureService(ILastMeasureStore lastMeasureStore, IMeasureSubscriptionStore subscriptionStore, ILogger<MeasureService> logger)
 	{
 		this.lastMeasureStore = lastMeasureStore;
 		this.subscriptionStore = subscriptionStore;
+		this.logger = logger;
 	}
 
 	public void OnNewMeasure(Measure measure)
@@ -31,15 +34,16 @@ public class MeasureService : IMeasureService
 
 		lastMeasureStore.UpdateLastMeasure(measure);
 
-		foreach (MeasureSubscription valueTuple in subscriptionStore.GetSubscriptions(measure.SensorId))
+		foreach (MeasureSubscription subscription in subscriptionStore.GetSubscriptions(measure.SensorId))
 		{
-			if (valueTuple.CancellationToken.IsCancellationRequested)
+			if (subscription.CancellationToken.IsCancellationRequested)
 			{
-				subscriptionStore.RemoveSubscription(valueTuple.SensorId, valueTuple.Id);
+				logger.LogInformation("Removed subscription");
+				subscriptionStore.RemoveSubscription(subscription.SensorId, subscription.Id);
 				continue;
 			}
 
-			Task.Run(() => valueTuple.Callback(measure));
+			Task.Run(async () => await subscription.Callback(measure));
 		}
 	}
 

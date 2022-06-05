@@ -15,7 +15,7 @@ public class Measure
 		MeasureTime = measureTime;
 	}
 
-	public Guid SensorId { get; set; }
+	public Guid SensorId { get; }
 
 	public DateTime MeasureTime { get; }
 

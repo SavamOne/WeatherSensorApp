@@ -47,9 +47,8 @@ public class MeasureSubscriptionStore : IMeasureSubscriptionStore
 			lock (locker)
 			{
 				sensorSubscription.Add(subscription);
+				return;
 			}
-
-			return;
 		}
 
 		sensorSubscription = new HashSet<MeasureSubscription>
