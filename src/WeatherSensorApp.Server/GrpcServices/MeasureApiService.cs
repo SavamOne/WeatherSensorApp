@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using WeatherSensorApp.Server.Business.Contracts;
 using WeatherSensorApp.Server.Business.Services;
 
@@ -21,9 +22,9 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 
 		try
 		{
-			while (!context.CancellationToken.IsCancellationRequested && await requestStream.MoveNext())
+			await foreach (MeasureRequest request in requestStream.ReadAllAsync(context.CancellationToken))
 			{
-				ProcessRequest(requestStream.Current, responseStream, sensorSubscriptionIds, context.CancellationToken);
+				ProcessRequest(request, responseStream, sensorSubscriptionIds, context.CancellationToken);
 			}
 		}
 		finally
@@ -43,7 +44,8 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 			SensorId = measure.SensorId.ToString(),
 			Co2 = measure.Co2,
 			Humidity = measure.Humidity,
-			Temperature = Convert.ToDouble(measure.Temperature)
+			Temperature = Convert.ToDouble(measure.Temperature),
+			Time = Timestamp.FromDateTime(measure.MeasureTime)
 		};
 
 		await responseStream.WriteAsync(response);

@@ -1,4 +1,5 @@
 using WeatherSensorApp.Server.Business.Extensions;
+using WeatherSensorApp.Server.Business.Options;
 using WeatherSensorApp.Server.GrpcServices;
 
 namespace WeatherSensorApp.Server;
@@ -9,6 +10,7 @@ public static class Program
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+		builder.Services.Configure<MeasureOptions>(builder.Configuration.GetSection(nameof(MeasureOptions)));
 		builder.Services.AddBusinessLogic();
 
 		builder.Services.AddControllers();
