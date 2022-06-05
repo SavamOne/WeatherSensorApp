@@ -1,4 +1,4 @@
-﻿namespace WeatherSensorApp.Server.Business.Contracts;
+﻿namespace WeatherSensorApp.Business.Contracts;
 
 public class MeasureSubscription : IEquatable<MeasureSubscription>
 {

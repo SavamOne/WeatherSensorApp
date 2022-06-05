@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using WeatherSensorApp.Server.Business.Contracts;
+using WeatherSensorApp.Business.Contracts;
 using WeatherSensorApp.Server.Business.Helpers;
 using WeatherSensorApp.Server.Business.Options;
 using WeatherSensorApp.Server.Business.Services;

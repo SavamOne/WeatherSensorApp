@@ -3,9 +3,26 @@ syntax = "proto3";
 option csharp_namespace = "WeatherSensorApp.Server";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 service MeasureSubscriptionService {
+  rpc GetAvailableSensors(google.protobuf.Empty) returns (AvailableSensorsResponse);
   rpc StreamMeasures(stream MeasureRequest) returns (stream MeasureResponse);
+}
+
+message AvailableSensorsResponse {
+  repeated SensorResponse sensors = 1;
+}
+
+message SensorResponse {
+  string id = 1;
+  string name = 2;
+  SensorType sensorType = 3;
+}
+
+enum SensorType {
+  OUTDOOR = 0;
+  INDOOR = 1;
 }
 
 message MeasureRequest {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using WeatherSensorApp.Server.Business.Contracts;
+using WeatherSensorApp.Business.Contracts;
 using WeatherSensorApp.Server.Business.Storages;
 
 namespace WeatherSensorApp.Server.Business.Services.Implementations;

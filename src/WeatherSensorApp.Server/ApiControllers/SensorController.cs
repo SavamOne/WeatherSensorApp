@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WeatherSensorApp.Server.Business.Contracts;
+using WeatherSensorApp.Business.Contracts;
 using WeatherSensorApp.Server.Business.Services;
 using WeatherSensorApp.Server.Contracts;
 

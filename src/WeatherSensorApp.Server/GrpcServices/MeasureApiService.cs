@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using WeatherSensorApp.Server.Business.Contracts;
+using WeatherSensorApp.Business.Contracts;
 using WeatherSensorApp.Server.Business.Services;
 
 namespace WeatherSensorApp.Server.GrpcServices;
@@ -14,6 +14,16 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 	{
 		this.service = service;
 		this.logger = logger;
+	}
+
+	public override Task<AvailableSensorsResponse> GetAvailableSensors(Empty request, ServerCallContext context)
+	{
+		AvailableSensorsResponse response = new()
+		{
+			Sensors = { service.GetAvailableSensors().Select(ConvertToGrpcType) }
+		};
+
+		return Task.FromResult(response);
 	}
 
 	public override async Task StreamMeasures(IAsyncStreamReader<MeasureRequest> requestStream, IServerStreamWriter<MeasureResponse> responseStream, ServerCallContext context)
@@ -37,6 +47,21 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 		}
 	}
 	
+	private static SensorResponse ConvertToGrpcType(Sensor sensor)
+	{
+		return new SensorResponse
+		{
+			Id = sensor.Id.ToString(),
+			Name = sensor.Name,
+			SensorType = sensor.Type switch
+			{
+				WeatherSensorApp.Business.Contracts.SensorType.Indoor => SensorType.Indoor,
+				WeatherSensorApp.Business.Contracts.SensorType.Outdoor => SensorType.Outdoor,
+				_ => throw new ArgumentOutOfRangeException(nameof(sensor.Type))
+			}
+		};
+	}
+	
 	private static async Task OnNewMeasure(IAsyncStreamWriter<MeasureResponse> responseStream, Measure measure)
 	{
 		MeasureResponse response = new()
@@ -51,10 +76,7 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 		await responseStream.WriteAsync(response);
 	}
 	
-	private void ProcessRequest(MeasureRequest request,
-		IAsyncStreamWriter<MeasureResponse> responseStream,
-		Dictionary<Guid, Guid> sensorSubscriptionIds,
-		CancellationToken cancellationToken)
+	private void ProcessRequest(MeasureRequest request, IAsyncStreamWriter<MeasureResponse> responseStream, Dictionary<Guid, Guid> sensorSubscriptionIds, CancellationToken cancellationToken)
 	{
 		if (!Guid.TryParse(request.SensorId, out Guid sensorId))
 		{

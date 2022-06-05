@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using WeatherSensorApp.Server.Business.Contracts;
+using WeatherSensorApp.Business.Contracts;
 
 namespace WeatherSensorApp.Server.Business.Storages.Implementations;
 
