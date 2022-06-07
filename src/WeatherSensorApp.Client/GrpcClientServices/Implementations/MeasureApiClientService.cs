@@ -30,7 +30,7 @@ public class MeasureApiClientService : IMeasureApiClientService
 		{
 			try
 			{
-				await ProcessBidirectionalCall(stoppingToken);
+				await ProcessBidirectionalCallAsync(stoppingToken);
 			}
 			catch (Exception e)
 			{
@@ -56,7 +56,7 @@ public class MeasureApiClientService : IMeasureApiClientService
 		});
 	}
 
-	private async Task ProcessBidirectionalCall(CancellationToken stoppingToken)
+	private async Task ProcessBidirectionalCallAsync(CancellationToken stoppingToken)
 	{
 		AsyncDuplexStreamingCall<MeasureRequest, MeasureResponse>? call = client.StreamMeasures(cancellationToken: stoppingToken);
 

@@ -15,7 +15,7 @@ public class SensorController : ControllerBase
 	}
 
 	[HttpGet("available_sensors")]
-	public async Task<IActionResult> GetAvailableSensors()
+	public async Task<IActionResult> GetAvailableSensorsAsync()
 	{
 		var result = await clientService.GetAvailableSensorsAsync();
 
