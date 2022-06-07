@@ -2,6 +2,7 @@
 using Grpc.Core;
 using WeatherSensorApp.Business.Contracts;
 using WeatherSensorApp.Server.Business.Services;
+using WeatherSensorApp.Server.Converters;
 
 namespace WeatherSensorApp.Server.GrpcServices;
 
@@ -20,7 +21,7 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 	{
 		AvailableSensorsResponse response = new()
 		{
-			Sensors = { service.GetAvailableSensors().Select(ConvertToGrpcType) }
+			Sensors = { service.GetAvailableSensors().Select(SensorConverter.ConvertToGrpcPresentation) }
 		};
 
 		return Task.FromResult(response);
@@ -46,34 +47,10 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 			}
 		}
 	}
-	
-	private static SensorResponse ConvertToGrpcType(Sensor sensor)
-	{
-		return new SensorResponse
-		{
-			Id = sensor.Id.ToString(),
-			Name = sensor.Name,
-			SensorType = sensor.Type switch
-			{
-				WeatherSensorApp.Business.Contracts.SensorType.Indoor => SensorType.Indoor,
-				WeatherSensorApp.Business.Contracts.SensorType.Outdoor => SensorType.Outdoor,
-				_ => throw new ArgumentOutOfRangeException(nameof(sensor.Type))
-			}
-		};
-	}
-	
+
 	private static async Task OnNewMeasure(IAsyncStreamWriter<MeasureResponse> responseStream, Measure measure)
 	{
-		MeasureResponse response = new()
-		{
-			SensorId = measure.SensorId.ToString(),
-			Co2 = measure.Co2,
-			Humidity = measure.Humidity,
-			Temperature = Convert.ToDouble(measure.Temperature),
-			Time = Timestamp.FromDateTime(measure.MeasureTime)
-		};
-
-		await responseStream.WriteAsync(response);
+		await responseStream.WriteAsync(measure.ConvertToGrpcPresentation());
 	}
 	
 	private void ProcessRequest(MeasureRequest request, IAsyncStreamWriter<MeasureResponse> responseStream, Dictionary<Guid, Guid> sensorSubscriptionIds, CancellationToken cancellationToken)

@@ -1,13 +1,12 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using WeatherSensorApp.Business.Contracts;
 using WeatherSensorApp.Server.Business.Helpers;
 using WeatherSensorApp.Server.Business.Options;
 using WeatherSensorApp.Server.Business.Services;
 
-namespace WeatherSensorApp.Server.Business.Workers;
+namespace WeatherSensorApp.Server.Business.BackgroundServices;
 
-public class BackgroundMeasureService : BackgroundService
+public class BackgroundMeasureService : Microsoft.Extensions.Hosting.BackgroundService
 {
 	private const int MinInterval = 100;
 	private const int MaxInterval = 2000;

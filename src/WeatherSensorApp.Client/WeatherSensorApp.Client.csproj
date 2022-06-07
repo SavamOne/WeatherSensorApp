@@ -14,6 +14,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Folder Include="ApiControllers" />
+      <ProjectReference Include="..\WeatherSensorApp.Client.Business\WeatherSensorApp.Client.Business.csproj" />
     </ItemGroup>
 </Project>
