@@ -10,15 +10,17 @@ public class AggregatedMeasuresStore
 	private static readonly IEqualityComparer<DateTime> DateTimeComparator = new DateTimeByMinuteComparator();
 
 	private readonly ConcurrentDictionary<DateTime, AggregatedMeasure> aggregatedMeasures = new(DateTimeComparator);
-	
+
 	public void AppendMeasure(Measure measure)
 	{
-		aggregatedMeasures.AddOrUpdate(measure.MeasureTime, _ => new AggregatedMeasure(measure.SensorId, measure.MeasureTime, measure), (_, aggregatedMeasure) =>
+		aggregatedMeasures.AddOrUpdate(measure.MeasureTime,
+		_ => new AggregatedMeasure(measure.SensorId, measure.MeasureTime, measure),
+		(_, aggregatedMeasure) =>
 		{
 			aggregatedMeasure.AppendMeasure(measure);
 			return aggregatedMeasure;
 		});
-	}     
+	}
 
 	public AggregatedMeasure? GetByMinute(DateTime dateTime)
 	{

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using WeatherSensorApp.Server.Business.BackgroundServices;
 using WeatherSensorApp.Server.Business.Services;
 using WeatherSensorApp.Server.Business.Services.Implementations;
 using WeatherSensorApp.Server.Business.Storages;
@@ -15,7 +14,5 @@ public static class RegistrationExtensions
 		serviceCollection.AddSingleton<IMeasureSubscriptionStore, MeasureSubscriptionStore>();
 
 		serviceCollection.AddSingleton<IMeasureService, MeasureService>();
-
-		serviceCollection.AddHostedService<BackgroundMeasureService>();
 	}
 }

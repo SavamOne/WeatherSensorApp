@@ -9,7 +9,7 @@ namespace WeatherSensorApp.Client.ApiControllers;
 public class AggregatedMeasureController : ControllerBase
 {
 	private readonly IAggregatedMeasureService aggregatedMeasureService;
-	
+
 	public AggregatedMeasureController(IAggregatedMeasureService aggregatedMeasureService)
 	{
 		this.aggregatedMeasureService = aggregatedMeasureService;
@@ -25,7 +25,7 @@ public class AggregatedMeasureController : ControllerBase
 	[HttpGet("all_info")]
 	public IActionResult GetAll()
 	{
-		IReadOnlyCollection<AggregatedMeasure> result = aggregatedMeasureService.GetAll();
+		var result = aggregatedMeasureService.GetAll();
 		return Ok(result.Select(AggregatedMeasureConverter.ConvertToPresentation));
 	}
 
@@ -35,12 +35,11 @@ public class AggregatedMeasureController : ControllerBase
 		aggregatedMeasureService.SubscribeSensor(sensorId);
 		return Ok();
 	}
-	
+
 	[HttpDelete("sensor_subscription/{sensorId:guid}")]
 	public IActionResult UnsubscribeFromSensor(Guid sensorId)
 	{
 		aggregatedMeasureService.UnsubscribeSensor(sensorId);
 		return Ok();
 	}
-	
 }

@@ -6,7 +6,7 @@ namespace WeatherSensorApp.Client.Business.Services;
 public interface IAggregatedMeasureService
 {
 	public event Action<SensorSubscriptionEventArgs>? SensorsCollectionChanged;
-	
+
 	void SubscribeSensor(Guid sensorId);
 
 	void UnsubscribeSensor(Guid sensorId);

@@ -1,3 +1,4 @@
+using WeatherSensorApp.Server.BackgroundServices;
 using WeatherSensorApp.Server.Business.Extensions;
 using WeatherSensorApp.Server.Business.Options;
 using WeatherSensorApp.Server.GrpcServices;
@@ -11,6 +12,7 @@ public static class Program
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 		builder.Services.Configure<MeasureOptions>(builder.Configuration.GetSection(nameof(MeasureOptions)));
+		builder.Services.AddHostedService<BackgroundMeasureService>();
 		builder.Services.AddBusinessLogic();
 
 		builder.Services.AddControllers();

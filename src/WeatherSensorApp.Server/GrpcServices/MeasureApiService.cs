@@ -21,7 +21,10 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 	{
 		AvailableSensorsResponse response = new()
 		{
-			Sensors = { service.GetAvailableSensors().Select(SensorConverter.ConvertToGrpcPresentation) }
+			Sensors =
+			{
+				service.GetAvailableSensors().Select(SensorConverter.ConvertToGrpcPresentation)
+			}
 		};
 
 		return Task.FromResult(response);
@@ -52,8 +55,11 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 	{
 		await responseStream.WriteAsync(measure.ConvertToGrpcPresentation());
 	}
-	
-	private void ProcessRequest(MeasureRequest request, IAsyncStreamWriter<MeasureResponse> responseStream, Dictionary<Guid, Guid> sensorSubscriptionIds, CancellationToken cancellationToken)
+
+	private void ProcessRequest(MeasureRequest request,
+		IAsyncStreamWriter<MeasureResponse> responseStream,
+		Dictionary<Guid, Guid> sensorSubscriptionIds,
+		CancellationToken cancellationToken)
 	{
 		if (!Guid.TryParse(request.SensorId, out Guid sensorId))
 		{

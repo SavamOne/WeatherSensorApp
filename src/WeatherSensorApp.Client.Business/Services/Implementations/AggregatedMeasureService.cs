@@ -19,9 +19,10 @@ public class AggregatedMeasureService : IAggregatedMeasureService
 			AggregatedMeasuresStore store = new();
 			SensorsCollectionChanged?.Invoke(new SensorSubscriptionEventArgs(sensorId, true));
 			return store;
-		}, (_, existedMeasure) => existedMeasure);
+		}, 
+		(_, existedMeasure) => existedMeasure);
 	}
-	
+
 	public void UnsubscribeSensor(Guid sensorId)
 	{
 		if (sensorDict.TryRemove(sensorId, out _))
@@ -32,11 +33,11 @@ public class AggregatedMeasureService : IAggregatedMeasureService
 
 	public void AppendMeasure(Measure measure)
 	{
-		if(!sensorDict.TryGetValue(measure.SensorId, out AggregatedMeasuresStore? store))
+		if (!sensorDict.TryGetValue(measure.SensorId, out AggregatedMeasuresStore? store))
 		{
 			throw new ArgumentException(nameof(measure));
 		}
-		
+
 		store.AppendMeasure(measure);
 	}
 
@@ -46,7 +47,7 @@ public class AggregatedMeasureService : IAggregatedMeasureService
 		{
 			throw new ArgumentException(nameof(minutes));
 		}
-		
+
 		if (!sensorDict.TryGetValue(sensorId, out AggregatedMeasuresStore? store))
 		{
 			throw new ArgumentException(nameof(sensorId));
@@ -54,7 +55,7 @@ public class AggregatedMeasureService : IAggregatedMeasureService
 
 		startTime = startTime.StripSeconds();
 		DateTime endTime = startTime.AddMinutes(minutes);
-		
+
 		TotalAggregatedMeasure totalAggregatedMeasure = new(sensorId, startTime, endTime);
 
 		for (DateTime current = startTime; current <= endTime; current = current.AddMinutes(1))
@@ -76,8 +77,8 @@ public class AggregatedMeasureService : IAggregatedMeasureService
 	{
 		return sensorDict.Values
 		   .SelectMany(x => x.GetAll())
-		   .OrderBy(x=> x.SensorId)
-		   .ThenBy(x=> x.AggregatedMinute)
+		   .OrderBy(x => x.SensorId)
+		   .ThenBy(x => x.AggregatedMinute)
 		   .ToList();
 	}
 }

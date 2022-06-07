@@ -7,6 +7,8 @@ namespace WeatherSensorApp.Server.Business.Services.Implementations;
 public class MeasureService : IMeasureService
 {
 	private readonly ILastMeasureStore lastMeasureStore;
+	private readonly ILogger<MeasureService> logger;
+	private readonly IMeasureSubscriptionStore subscriptionStore;
 
 	private readonly Dictionary<Guid, Sensor> sensors = new Sensor[]
 	{
@@ -15,8 +17,6 @@ public class MeasureService : IMeasureService
 		new(Guid.Parse("58edced9-fdb7-49c4-be20-76316037ec20"), SensorType.Indoor, "Датчик в помещении")
 	}.ToDictionary(x => x.Id);
 
-	private readonly IMeasureSubscriptionStore subscriptionStore;
-	private readonly ILogger<MeasureService> logger;
 
 	public MeasureService(ILastMeasureStore lastMeasureStore, IMeasureSubscriptionStore subscriptionStore, ILogger<MeasureService> logger)
 	{

@@ -10,7 +10,7 @@ public class DateTimeByMinuteComparator : IEqualityComparer<DateTime>
 			&& x.Month == y.Month
 			&& x.Year == y.Year;
 	}
-	
+
 	public int GetHashCode(DateTime obj)
 	{
 		return HashCode.Combine(obj.Day,

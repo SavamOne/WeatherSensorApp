@@ -13,11 +13,11 @@ public class SensorController : ControllerBase
 	{
 		this.clientService = clientService;
 	}
-	
+
 	[HttpGet("available_sensors")]
 	public async Task<IActionResult> GetAvailableSensors()
 	{
-		var result= await clientService.GetAvailableSensorsAsync();
+		var result = await clientService.GetAvailableSensorsAsync();
 
 		return Ok(result.Select(SensorConverter.ConvertToPresentation));
 	}

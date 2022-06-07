@@ -12,7 +12,7 @@ public static class Program
 	public static void Main(string[] args)
 	{
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-		
+
 		builder.Services.AddControllers();
 		builder.Services.AddSingleton<IMeasureApiClientService, MeasureApiClientService>();
 		builder.Services.AddSingleton<IAggregatedMeasureService, AggregatedMeasureService>();
@@ -23,7 +23,7 @@ public static class Program
 		});
 
 		WebApplication app = builder.Build();
-		
+
 		app.MapControllers();
 
 		app.Run();

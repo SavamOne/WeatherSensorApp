@@ -4,15 +4,15 @@ using WeatherSensorApp.Server.Business.Helpers;
 using WeatherSensorApp.Server.Business.Options;
 using WeatherSensorApp.Server.Business.Services;
 
-namespace WeatherSensorApp.Server.Business.BackgroundServices;
+namespace WeatherSensorApp.Server.BackgroundServices;
 
-public class BackgroundMeasureService : Microsoft.Extensions.Hosting.BackgroundService
+public class BackgroundMeasureService : BackgroundService
 {
 	private const int MinInterval = 100;
 	private const int MaxInterval = 2000;
-	
-	private readonly IMeasureService measureService;
 	private readonly int interval;
+
+	private readonly IMeasureService measureService;
 
 	public BackgroundMeasureService(IMeasureService measureService, IOptions<MeasureOptions> options)
 	{
@@ -27,13 +27,13 @@ public class BackgroundMeasureService : Microsoft.Extensions.Hosting.BackgroundS
 		while (!stoppingToken.IsCancellationRequested)
 		{
 			Task delay = Task.Delay(interval, stoppingToken);
-			
+
 			foreach (Sensor sensor in sensors)
 			{
 				Measure randomMeasure = MeasureGenerator.GenerateRandom(sensor.Id);
 				measureService.OnNewMeasure(randomMeasure);
 			}
-			
+
 			await delay;
 		}
 	}

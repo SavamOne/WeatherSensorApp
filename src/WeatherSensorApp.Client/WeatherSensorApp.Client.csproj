@@ -8,12 +8,12 @@
     <ItemGroup>
         <Protobuf Include="..\WeatherSensorApp.Server\Protos\measureSubscriptionService.proto" GrpcServices="Client" />
     </ItemGroup>
-    
+
     <ItemGroup>
-      <PackageReference Include="Grpc.AspNetCore" Version="2.46.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.46.0" />
     </ItemGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\WeatherSensorApp.Client.Business\WeatherSensorApp.Client.Business.csproj" />
+        <ProjectReference Include="..\WeatherSensorApp.Client.Business\WeatherSensorApp.Client.Business.csproj" />
     </ItemGroup>
 </Project>

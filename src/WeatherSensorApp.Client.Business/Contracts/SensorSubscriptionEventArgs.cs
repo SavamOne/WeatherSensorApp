@@ -9,6 +9,6 @@ public class SensorSubscriptionEventArgs : EventArgs
 	}
 
 	public Guid SensorId { get; }
-	
+
 	public bool Subscribe { get; }
 }

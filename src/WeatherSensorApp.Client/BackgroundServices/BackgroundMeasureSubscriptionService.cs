@@ -5,7 +5,7 @@ namespace WeatherSensorApp.Client.BackgroundServices;
 public class BackgroundMeasureSubscriptionService : BackgroundService
 {
 	private readonly IMeasureApiClientService apiClientService;
-	
+
 	public BackgroundMeasureSubscriptionService(IMeasureApiClientService apiClientService)
 	{
 		this.apiClientService = apiClientService;

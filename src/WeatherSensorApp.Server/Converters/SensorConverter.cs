@@ -17,5 +17,5 @@ public static class SensorConverter
 				_ => throw new ArgumentOutOfRangeException(nameof(sensor.Type))
 			}
 		};
-	} 
+	}
 }

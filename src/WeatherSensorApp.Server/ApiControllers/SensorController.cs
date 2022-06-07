@@ -8,8 +8,8 @@ namespace WeatherSensorApp.Server.ApiControllers;
 public class SensorController : ControllerBase
 {
 	private readonly IMeasureService measureService;
-	
-	public SensorController(IMeasureService measureService) 
+
+	public SensorController(IMeasureService measureService)
 	{
 		this.measureService = measureService;
 	}
