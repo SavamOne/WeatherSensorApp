@@ -1,3 +1,6 @@
+// TODO я бы вынес протник в отдельный пакет, потому что клиент и сервер у тебя очень редко бывают в одном проекте, а его надо как то передавать
+// Можно конечно просто копировать то не совсем удобно и версионирования нет
+
 syntax = "proto3";
 
 option csharp_namespace = "WeatherSensorApp.Server";
@@ -25,6 +28,7 @@ enum SensorType {
   INDOOR = 1;
 }
 
+// TODO А почему только к одному)) почему сразу не могу на 10 подписаться
 message MeasureRequest {
   string sensorId = 1;
   bool subscribe = 2;

@@ -29,6 +29,7 @@ public class AggregatedMeasureController : ControllerBase
 		return Ok(result.Select(AggregatedMeasureConverter.ConvertToPresentation));
 	}
 
+	// TODO хочу подписываться и отписываться сразу на несколько штук
 	[HttpPost("sensor_subscription/{sensorId:guid}")]
 	public IActionResult SubscribeToSensor(Guid sensorId)
 	{

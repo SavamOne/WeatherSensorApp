@@ -36,6 +36,8 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 
 		try
 		{
+			// TODO почему не разделил на два параллельных метода один из которых отвечает за прием второй за передачу
+			// TODO так было бы проще контролировать, такой пример даже вроде на майкрософте есть
 			await foreach (MeasureRequest request in requestStream.ReadAllAsync(context.CancellationToken))
 			{
 				ProcessRequest(request, responseStream, sensorSubscriptionIds, context.CancellationToken);
@@ -51,6 +53,7 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 		}
 	}
 
+	// TODO не передаешь токен отмены
 	private static async Task OnNewMeasure(IAsyncStreamWriter<MeasureResponse> responseStream, Measure measure)
 	{
 		await responseStream.WriteAsync(measure.ConvertToGrpcPresentation());
@@ -70,6 +73,7 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 
 		if (request.Subscribe && !containsSub)
 		{
+			// TODO Соответсвенно тут надо тоже передать токен отмены
 			sensorSubscriptionIds[sensorId] = service.SubscribeToMeasures(sensorId, async measure => await OnNewMeasure(responseStream, measure), cancellationToken);
 			logger.LogDebug("Subscribed!");
 		}

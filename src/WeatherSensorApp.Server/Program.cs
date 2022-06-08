@@ -2,6 +2,7 @@ using WeatherSensorApp.Server.BackgroundServices;
 using WeatherSensorApp.Server.Business.Extensions;
 using WeatherSensorApp.Server.Business.Options;
 using WeatherSensorApp.Server.GrpcServices;
+using Grpc.Reflection;
 
 namespace WeatherSensorApp.Server;
 
@@ -17,11 +18,13 @@ public static class Program
 
 		builder.Services.AddControllers();
 		builder.Services.AddGrpc();
+		builder.Services.AddGrpcReflection();
 
 		WebApplication app = builder.Build();
 
 		app.MapGrpcService<MeasureApiService>();
 		app.MapControllers();
+		app.MapGrpcReflectionService();
 
 		app.Run();
 	}

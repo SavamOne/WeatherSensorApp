@@ -10,6 +10,8 @@ public class MeasureService : IMeasureService
 	private readonly ILogger<MeasureService> logger;
 	private readonly IMeasureSubscriptionStore subscriptionStore;
 
+    // TODO количество датчиков надо тоже генерировать из конфигураций
+	// TODO у них о функционал похож)
 	private readonly Dictionary<Guid, Sensor> sensors = new Sensor[]
 	{
 		new(Guid.Parse("9295d744-192f-42f4-86eb-082e5510846b"), SensorType.Outdoor, "Уличный датчик 1"),
