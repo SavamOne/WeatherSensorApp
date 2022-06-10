@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using WeatherSensorApp.Business.Contracts;
+using WeatherSensorApp.Server.Business.Converters;
+using WeatherSensorApp.Server.Business.Options;
 using WeatherSensorApp.Server.Business.Storages;
 
 namespace WeatherSensorApp.Server.Business.Services.Implementations;
@@ -9,19 +12,13 @@ public class MeasureService : IMeasureService
 	private readonly ILastMeasureStore lastMeasureStore;
 	private readonly ILogger<MeasureService> logger;
 	private readonly IMeasureSubscriptionStore subscriptionStore;
+	private readonly Dictionary<Guid, Sensor> sensors;
 
-    // TODO количество датчиков надо тоже генерировать из конфигураций
-	// TODO у них о функционал похож)
-	private readonly Dictionary<Guid, Sensor> sensors = new Sensor[]
+
+	public MeasureService(ILastMeasureStore lastMeasureStore, IMeasureSubscriptionStore subscriptionStore, IOptions<SensorOptions> options, ILogger<MeasureService> logger)
 	{
-		new(Guid.Parse("9295d744-192f-42f4-86eb-082e5510846b"), SensorType.Outdoor, "Уличный датчик 1"),
-		new(Guid.Parse("b4fcab16-c6a1-4f5b-9b54-b3be516c249a"), SensorType.Outdoor, "Уличный датчик 2"),
-		new(Guid.Parse("58edced9-fdb7-49c4-be20-76316037ec20"), SensorType.Indoor, "Датчик в помещении")
-	}.ToDictionary(x => x.Id);
-
-
-	public MeasureService(ILastMeasureStore lastMeasureStore, IMeasureSubscriptionStore subscriptionStore, ILogger<MeasureService> logger)
-	{
+		sensors = options.Value.SensorDefinitions.Select(SensorConverter.ConvertToBusiness).ToDictionary(x => x.Id);
+		
 		this.lastMeasureStore = lastMeasureStore;
 		this.subscriptionStore = subscriptionStore;
 		this.logger = logger;
