@@ -30,16 +30,21 @@ public class AggregatedMeasureController : ControllerBase
 		return result.Select(AggregatedMeasureConverter.ConvertToPresentation);
 	}
 
-	// TODO хочу подписываться и отписываться сразу на несколько штук
-	[HttpPost("sensor_subscription/{sensorId:guid}")]
-	public void SubscribeToSensor(Guid sensorId)
+	[HttpPost("sensor_subscription/")]
+	public void SubscribeToSensor([FromQuery] Guid[] sensorIds)
 	{
-		aggregatedMeasureService.SubscribeSensor(sensorId);
+		foreach (Guid sensorId in sensorIds)
+		{
+			aggregatedMeasureService.SubscribeSensor(sensorId);
+		}
 	}
 
-	[HttpDelete("sensor_subscription/{sensorId:guid}")]
-	public void UnsubscribeFromSensor(Guid sensorId)
+	[HttpDelete("sensor_subscription/")]
+	public void UnsubscribeFromSensor([FromQuery] Guid[] sensorIds)
 	{
-		aggregatedMeasureService.UnsubscribeSensor(sensorId);
+		foreach (Guid sensorId in sensorIds)
+		{
+			aggregatedMeasureService.UnsubscribeSensor(sensorId);
+		}
 	}
 }

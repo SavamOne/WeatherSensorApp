@@ -1,4 +1,5 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using System.Threading.Channels;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using WeatherSensorApp.Business.Contracts;
 using WeatherSensorApp.Server.Business.Services;
@@ -8,6 +9,7 @@ namespace WeatherSensorApp.Server.GrpcServices;
 
 public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionServiceBase
 {
+	private readonly Channel<MeasureResponse> measureChannel = Channel.CreateUnbounded<MeasureResponse>();
 	private readonly ILogger<MeasureApiService> logger;
 	private readonly IMeasureService service;
 
@@ -32,34 +34,43 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 
 	public override async Task StreamMeasures(IAsyncStreamReader<MeasureRequest> requestStream, IServerStreamWriter<MeasureResponse> responseStream, ServerCallContext context)
 	{
-		Dictionary<Guid, Guid> sensorSubscriptionIds = new();
+		Task readTask = Task.Run(async () =>
+		{
+			Dictionary<Guid, Guid> sensorSubscriptionIds = new();
+			try
+			{
+				await foreach (MeasureRequest request in requestStream.ReadAllAsync(context.CancellationToken))
+				{
+					ProcessRequest(request, sensorSubscriptionIds, context.CancellationToken);
+				}
+			}
+			finally
+			{
+				foreach (var kvp in sensorSubscriptionIds)
+				{
+					service.UnsubscribeFromMeasures(kvp.Key, kvp.Value);
+					logger.LogDebug("Force unsubscribed!");
+				}
+			}
+		});
+		
+		Task writeTask = Task.Run(async () =>
+		{
+			await foreach (MeasureResponse response in measureChannel.Reader.ReadAllAsync(context.CancellationToken))
+			{
+				await responseStream.WriteAsync(response, context.CancellationToken);
+			}
+		});
 
-		try
-		{
-			// TODO почему не разделил на два параллельных метода один из которых отвечает за прием второй за передачу
-			// TODO так было бы проще контролировать, такой пример даже вроде на майкрософте есть
-			await foreach (MeasureRequest request in requestStream.ReadAllAsync(context.CancellationToken))
-			{
-				ProcessRequest(request, responseStream, sensorSubscriptionIds, context.CancellationToken);
-			}
-		}
-		finally
-		{
-			foreach (var kvp in sensorSubscriptionIds)
-			{
-				service.UnsubscribeFromMeasures(kvp.Key, kvp.Value);
-				logger.LogDebug("Force unsubscribed!");
-			}
-		}
+		await Task.WhenAny(readTask, writeTask);
 	}
 	
-	private static async Task OnNewMeasure(IAsyncStreamWriter<MeasureResponse> responseStream, Measure measure, CancellationToken cancellationToken)
+	private  async Task OnNewMeasure(Measure measure, CancellationToken cancellationToken)
 	{
-		await responseStream.WriteAsync(measure.ConvertToGrpcPresentation(), cancellationToken);
+		await measureChannel.Writer.WriteAsync(measure.ConvertToGrpcPresentation(), cancellationToken);
 	}
 
 	private void ProcessRequest(MeasureRequest request,
-		IAsyncStreamWriter<MeasureResponse> responseStream,
 		Dictionary<Guid, Guid> sensorSubscriptionIds,
 		CancellationToken cancellationToken)
 	{
@@ -72,7 +83,7 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 
 		if (request.Subscribe && !containsSub)
 		{
-			sensorSubscriptionIds[sensorId] = service.SubscribeToMeasures(sensorId, async measure => await OnNewMeasure(responseStream, measure, cancellationToken), cancellationToken);
+			sensorSubscriptionIds[sensorId] = service.SubscribeToMeasures(sensorId, async measure => await OnNewMeasure(measure, cancellationToken), cancellationToken);
 			logger.LogDebug("Subscribed!");
 		}
 		else if (!request.Subscribe && containsSub)
