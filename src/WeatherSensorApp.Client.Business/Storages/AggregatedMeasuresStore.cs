@@ -1,20 +1,32 @@
 ﻿using System.Collections.Concurrent;
 using WeatherSensorApp.Business.Contracts;
-using WeatherSensorApp.Client.Business.Comparators;
 using WeatherSensorApp.Client.Business.Contracts;
+using WeatherSensorApp.Client.Business.Helpers;
 
 namespace WeatherSensorApp.Client.Business.Storages;
 
 public class AggregatedMeasuresStore
 {
-	private static readonly IEqualityComparer<DateTime> DateTimeComparator = new DateTimeByMinuteComparator();
+	private readonly IAggregationHelper aggregationHelper;
+	private readonly ConcurrentDictionary<DateTime, AggregatedMeasure> aggregatedMeasures;
 
-	private readonly ConcurrentDictionary<DateTime, AggregatedMeasure> aggregatedMeasures = new(DateTimeComparator);
+	public AggregatedMeasuresStore(IAggregationHelper aggregationHelper)
+	{
+		this.aggregationHelper = aggregationHelper;
+		aggregatedMeasures = new ConcurrentDictionary<DateTime, AggregatedMeasure>(aggregationHelper.DateTimeComparer);
+	}
 
 	public void AppendMeasure(Measure measure)
 	{
 		aggregatedMeasures.AddOrUpdate(measure.MeasureTime,
-		_ => new AggregatedMeasure(measure.SensorId, measure.MeasureTime, measure),
+		_ =>
+		{
+			AggregatedMeasure store = new(measure.SensorId,
+				aggregationHelper.RoundToAggregationPeriodStart(measure.MeasureTime),
+				aggregationHelper.RoundToAggregationEnd(measure.MeasureTime));
+			store.AppendMeasure(measure);
+			return store;
+		},
 		(_, aggregatedMeasure) =>
 		{
 			aggregatedMeasure.AppendMeasure(measure);
@@ -22,7 +34,7 @@ public class AggregatedMeasuresStore
 		});
 	}
 
-	public AggregatedMeasure? GetByMinute(DateTime dateTime)
+	public AggregatedMeasure? GetByPediod(DateTime dateTime)
 	{
 		if (aggregatedMeasures.TryGetValue(dateTime, out AggregatedMeasure? measure))
 		{
@@ -35,7 +47,7 @@ public class AggregatedMeasuresStore
 	public IReadOnlyCollection<AggregatedMeasure> GetAll()
 	{
 		return aggregatedMeasures.Values
-		   .OrderBy(x => x.AggregatedMinute)
+		   .OrderBy(x => x.AggregatedTimeStart)
 		   .ToList();
 	}
 }

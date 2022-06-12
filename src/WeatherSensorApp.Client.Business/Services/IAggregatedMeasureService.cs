@@ -13,7 +13,7 @@ public interface IAggregatedMeasureService
 
 	void AppendMeasure(Measure measure);
 
-	TotalAggregatedMeasure GetRange(Guid sensorId, DateTime startTime, int minutes);
+	TotalAggregatedMeasure GetRange(Guid sensorId, DateTime startTime, int periods);
 
 	IReadOnlyCollection<AggregatedMeasure> GetAll();
 }

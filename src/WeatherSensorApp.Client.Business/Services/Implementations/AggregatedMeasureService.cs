@@ -1,14 +1,20 @@
 ﻿using System.Collections.Concurrent;
 using WeatherSensorApp.Business.Contracts;
 using WeatherSensorApp.Client.Business.Contracts;
-using WeatherSensorApp.Client.Business.Extensions;
+using WeatherSensorApp.Client.Business.Helpers;
 using WeatherSensorApp.Client.Business.Storages;
 
 namespace WeatherSensorApp.Client.Business.Services.Implementations;
 
 public class AggregatedMeasureService : IAggregatedMeasureService
 {
+	private readonly IAggregationHelper aggregationHelper;
 	private readonly ConcurrentDictionary<Guid, AggregatedMeasuresStore> sensorDict = new();
+
+	public AggregatedMeasureService(IAggregationHelper aggregationHelper) 
+	{
+		this.aggregationHelper = aggregationHelper;
+	}
 
 	public event Action<SensorSubscriptionEventArgs>? SensorsCollectionChanged;
 
@@ -16,7 +22,7 @@ public class AggregatedMeasureService : IAggregatedMeasureService
 	{
 		sensorDict.AddOrUpdate(sensorId, _ =>
 		{
-			AggregatedMeasuresStore store = new();
+			AggregatedMeasuresStore store = new(aggregationHelper);
 			SensorsCollectionChanged?.Invoke(new SensorSubscriptionEventArgs(sensorId, true));
 			return store;
 		}, 
@@ -41,11 +47,11 @@ public class AggregatedMeasureService : IAggregatedMeasureService
 		store.AppendMeasure(measure);
 	}
 
-	public TotalAggregatedMeasure GetRange(Guid sensorId, DateTime startTime, int minutes)
+	public TotalAggregatedMeasure GetRange(Guid sensorId, DateTime startTime, int periods)
 	{
-		if (minutes < 0)
+		if (periods < 1)
 		{
-			throw new ArgumentException(nameof(minutes));
+			throw new ArgumentException(nameof(periods));
 		}
 
 		if (!sensorDict.TryGetValue(sensorId, out AggregatedMeasuresStore? store))
@@ -53,14 +59,14 @@ public class AggregatedMeasureService : IAggregatedMeasureService
 			throw new ArgumentException(nameof(sensorId));
 		}
 
-		startTime = startTime.StripSeconds();
-		DateTime endTime = startTime.AddMinutes(minutes);
+		DateTime aggregationStartTime = aggregationHelper.RoundToAggregationPeriodStart(startTime);
+		DateTime aggregationEndTime = aggregationHelper.RoundToAggregationEnd(startTime, periods);
+		
+		TotalAggregatedMeasure totalAggregatedMeasure = new(sensorId, aggregationStartTime, aggregationEndTime);
 
-		TotalAggregatedMeasure totalAggregatedMeasure = new(sensorId, startTime, endTime);
-
-		for (DateTime current = startTime; current <= endTime; current = current.AddMinutes(1))
+		for (DateTime current = aggregationStartTime; current <= aggregationEndTime; current += aggregationHelper.AggregationTime)
 		{
-			AggregatedMeasure? aggregatedMeasure = store.GetByMinute(current);
+			AggregatedMeasure? aggregatedMeasure = store.GetByPediod(current);
 
 			if (aggregatedMeasure is null)
 			{
@@ -78,7 +84,7 @@ public class AggregatedMeasureService : IAggregatedMeasureService
 		return sensorDict.Values
 		   .SelectMany(x => x.GetAll())
 		   .OrderBy(x => x.SensorId)
-		   .ThenBy(x => x.AggregatedMinute)
+		   .ThenBy(x => x.AggregatedTimeStart)
 		   .ToList();
 	}
 }

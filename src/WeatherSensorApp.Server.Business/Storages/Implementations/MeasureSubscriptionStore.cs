@@ -51,13 +51,11 @@ public class MeasureSubscriptionStore : IMeasureSubscriptionStore
 			}
 		}
 
-		sensorSubscription = new HashSet<MeasureSubscription>
-		{
-			subscription
-		};
-
 		subscriptionsDict.AddOrUpdate(subscription.SensorId,
-			sensorSubscription,
+			_ => new HashSet<MeasureSubscription>
+			{
+				subscription
+			},
 			(_, set) =>
 			{
 				set.Add(subscription);

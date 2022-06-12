@@ -52,11 +52,10 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 			}
 		}
 	}
-
-	// TODO не передаешь токен отмены
-	private static async Task OnNewMeasure(IAsyncStreamWriter<MeasureResponse> responseStream, Measure measure)
+	
+	private static async Task OnNewMeasure(IAsyncStreamWriter<MeasureResponse> responseStream, Measure measure, CancellationToken cancellationToken)
 	{
-		await responseStream.WriteAsync(measure.ConvertToGrpcPresentation());
+		await responseStream.WriteAsync(measure.ConvertToGrpcPresentation(), cancellationToken);
 	}
 
 	private void ProcessRequest(MeasureRequest request,
@@ -73,8 +72,7 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 
 		if (request.Subscribe && !containsSub)
 		{
-			// TODO Соответсвенно тут надо тоже передать токен отмены
-			sensorSubscriptionIds[sensorId] = service.SubscribeToMeasures(sensorId, async measure => await OnNewMeasure(responseStream, measure), cancellationToken);
+			sensorSubscriptionIds[sensorId] = service.SubscribeToMeasures(sensorId, async measure => await OnNewMeasure(responseStream, measure, cancellationToken), cancellationToken);
 			logger.LogDebug("Subscribed!");
 		}
 		else if (!request.Subscribe && containsSub)

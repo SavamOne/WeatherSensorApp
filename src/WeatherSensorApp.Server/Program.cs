@@ -2,7 +2,6 @@ using WeatherSensorApp.Server.BackgroundServices;
 using WeatherSensorApp.Server.Business.Extensions;
 using WeatherSensorApp.Server.Business.Options;
 using WeatherSensorApp.Server.GrpcServices;
-using Grpc.Reflection;
 using WeatherSensorApp.Server.Options;
 
 namespace WeatherSensorApp.Server;
@@ -18,7 +17,12 @@ public static class Program
 		   .ValidateDataAnnotations();
 		builder.Services.AddOptions<SensorOptions>()
 		   .Bind(builder.Configuration.GetSection(nameof(SensorOptions)))
-		   .ValidateDataAnnotations();
+		   .ValidateDataAnnotations()
+		   .Validate(sensorOptions =>
+			{
+				return sensorOptions.SensorDefinitions.All(definition => !string.IsNullOrWhiteSpace(definition.Name));
+			});
+		
 		builder.Services.AddHostedService<BackgroundMeasureService>();
 		builder.Services.AddBusinessLogic();
 

@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Protobuf Include="..\WeatherSensorApp.Server\Protos\measureSubscriptionService.proto" GrpcServices="Client" />
+        <Protobuf Include="..\Protos\measureSubscriptionService.proto" GrpcServices="Client" />
     </ItemGroup>
 
     <ItemGroup>

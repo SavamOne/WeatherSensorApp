@@ -9,8 +9,8 @@ public static class TotalAggregatedMeasureConverter
 	{
 		return new TotalAggregatedMeasureResult
 		{
-			AggregatedMinuteStart = totalAggregatedMeasure.AggregatedMinuteStart,
-			AggregatedMinuteEnd = totalAggregatedMeasure.AggregatedMinuteEnd,
+			AggregatedMinuteStart = totalAggregatedMeasure.AggregatedTimeStart,
+			AggregatedMinuteEnd = totalAggregatedMeasure.AggregatedTimeEnd,
 			MaxCo2 = totalAggregatedMeasure.MaxCo2,
 			MeanHumidity = totalAggregatedMeasure.MeanHumidity,
 			MeanTemperature = Math.Round(totalAggregatedMeasure.MeanTemperature, 1),

@@ -6,26 +6,26 @@ public class TotalAggregatedMeasure
 	private int measureCount;
 	private decimal temperatureSum;
 
-	public TotalAggregatedMeasure(Guid sensorId, DateTime aggregatedMinuteStart, DateTime aggregatedMinuteEnd)
+	public TotalAggregatedMeasure(Guid sensorId, DateTime aggregatedTimeStart, DateTime aggregatedTimeEnd)
 	{
 		SensorId = sensorId;
-		AggregatedMinuteStart = aggregatedMinuteStart;
-		AggregatedMinuteEnd = aggregatedMinuteEnd;
+		AggregatedTimeStart = aggregatedTimeStart;
+		AggregatedTimeEnd = aggregatedTimeEnd;
 	}
 
 	public Guid SensorId { get; }
 
-	public DateTime AggregatedMinuteStart { get; }
+	public DateTime AggregatedTimeStart { get; }
 
-	public DateTime AggregatedMinuteEnd { get; }
+	public DateTime AggregatedTimeEnd { get; }
 
 	public decimal MeanTemperature => temperatureSum / measureCount;
 
 	public int MeanHumidity => humiditySum / measureCount;
 
-	public int MinCo2 { get; protected set; }
+	public int MinCo2 { get; private set; }
 
-	public int MaxCo2 { get; protected set; }
+	public int MaxCo2 { get; private set; }
 
 	public void AddAggregatedMeasure(AggregatedMeasure aggregatedMeasure)
 	{

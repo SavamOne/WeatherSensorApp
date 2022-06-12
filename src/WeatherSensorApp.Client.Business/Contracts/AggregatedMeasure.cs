@@ -1,5 +1,4 @@
 ﻿using WeatherSensorApp.Business.Contracts;
-using WeatherSensorApp.Client.Business.Extensions;
 
 namespace WeatherSensorApp.Client.Business.Contracts;
 
@@ -9,21 +8,18 @@ public class AggregatedMeasure
 	private int measureCount;
 	private decimal temperatureSum;
 
-	public AggregatedMeasure(Guid sensorId, DateTime aggregatedMinute)
+	public AggregatedMeasure(Guid sensorId, DateTime aggregatedTimeStart, DateTime aggregatedTimeEnd)
 	{
 		SensorId = sensorId;
-		AggregatedMinute = aggregatedMinute.StripSeconds();
-	}
-
-	public AggregatedMeasure(Guid sensorId, DateTime aggregatedMinute, Measure firstMeasure)
-		: this(sensorId, aggregatedMinute)
-	{
-		AppendMeasure(firstMeasure);
+		AggregatedTimeStart = aggregatedTimeStart;
+		AggregatedTimeEnd = aggregatedTimeEnd;
 	}
 
 	public Guid SensorId { get; }
 
-	public DateTime AggregatedMinute { get; }
+	public DateTime AggregatedTimeStart { get; }
+
+	public DateTime AggregatedTimeEnd { get; }
 
 	public decimal MeanTemperature => temperatureSum / measureCount;
 

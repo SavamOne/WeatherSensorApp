@@ -1,7 +1,8 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using WeatherSensorApp.Business.Contracts;
-using WeatherSensorApp.Server;
 using WeatherSensorApp.Server.Contracts;
+
+namespace WeatherSensorApp.Server.Converters;
 
 public static class MeasureConverter
 {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WeatherSensorApp.Client.Contracts;
 using WeatherSensorApp.Client.Converters;
 using WeatherSensorApp.Client.GrpcClientServices;
 
@@ -15,10 +16,10 @@ public class SensorController : ControllerBase
 	}
 
 	[HttpGet("available_sensors")]
-	public async Task<IActionResult> GetAvailableSensorsAsync()
+	public async Task<IEnumerable<SensorResult>> GetAvailableSensorsAsync()
 	{
 		var result = await clientService.GetAvailableSensorsAsync();
 
-		return Ok(result.Select(SensorConverter.ConvertToPresentation));
+		return result.Select(SensorConverter.ConvertToPresentation);
 	}
 }

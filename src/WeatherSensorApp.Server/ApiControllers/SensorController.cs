@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WeatherSensorApp.Business.Contracts;
 using WeatherSensorApp.Server.Business.Services;
+using WeatherSensorApp.Server.Contracts;
+using WeatherSensorApp.Server.Converters;
 
 namespace WeatherSensorApp.Server.ApiControllers;
 
@@ -15,10 +17,10 @@ public class SensorController : ControllerBase
 	}
 
 	[HttpGet("last_measure/{sensorId:guid}")]
-	public IActionResult GetLastMeasure(Guid sensorId)
+	public MeasureResult? GetLastMeasure(Guid sensorId)
 	{
 		Measure? result = measureService.GetLastMeasure(sensorId);
 
-		return Ok(result?.ConvertToPresentation());
+		return result?.ConvertToPresentation();
 	}
 }

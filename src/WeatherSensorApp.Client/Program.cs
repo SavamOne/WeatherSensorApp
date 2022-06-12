@@ -1,4 +1,7 @@
 using WeatherSensorApp.Client.BackgroundServices;
+using WeatherSensorApp.Client.Business.Helpers;
+using WeatherSensorApp.Client.Business.Helpers.Implementations;
+using WeatherSensorApp.Client.Business.Options;
 using WeatherSensorApp.Client.Business.Services;
 using WeatherSensorApp.Client.Business.Services.Implementations;
 using WeatherSensorApp.Client.GrpcClientServices;
@@ -15,6 +18,12 @@ public static class Program
 		WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 		builder.Services.AddControllers();
+
+		builder.Services.AddOptions<AggregationOptions>()
+		   .Bind(builder.Configuration.GetSection(nameof(AggregationOptions)))
+		   .Validate(options => options.AggregationPeriodInMinutes > 0 && 60 % options.AggregationPeriodInMinutes == 0);
+
+		builder.Services.AddSingleton<IAggregationHelper, ByMinuteAggregationHelper>();
 		builder.Services.AddSingleton<IMeasureApiClientService, MeasureApiClientService>();
 		builder.Services.AddSingleton<IAggregatedMeasureService, AggregatedMeasureService>();
 		builder.Services.AddHostedService<BackgroundMeasureSubscriptionService>();

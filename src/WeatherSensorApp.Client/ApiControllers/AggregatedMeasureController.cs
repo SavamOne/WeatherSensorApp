@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WeatherSensorApp.Client.Business.Contracts;
 using WeatherSensorApp.Client.Business.Services;
+using WeatherSensorApp.Client.Contracts;
 using WeatherSensorApp.Client.Converters;
 
 namespace WeatherSensorApp.Client.ApiControllers;
@@ -16,31 +17,29 @@ public class AggregatedMeasureController : ControllerBase
 	}
 
 	[HttpGet("from_sensor_info/{sensorId:guid}")]
-	public IActionResult GetFromSensor(Guid sensorId, [FromQuery] DateTime? fromTime, [FromQuery] int? minutes)
+	public TotalAggregatedMeasureResult GetFromSensor(Guid sensorId, [FromQuery] DateTime? fromTime, [FromQuery] int? periods)
 	{
-		TotalAggregatedMeasure result = aggregatedMeasureService.GetRange(sensorId, fromTime ?? DateTime.UtcNow, minutes ?? 0);
-		return Ok(result.ConvertToPresentation());
+		TotalAggregatedMeasure result = aggregatedMeasureService.GetRange(sensorId, fromTime ?? DateTime.UtcNow, periods ?? 1);
+		return result.ConvertToPresentation();
 	}
 
 	[HttpGet("all_info")]
-	public IActionResult GetAll()
+	public IEnumerable<AggregatedMeasureResult> GetAll()
 	{
-		var result = aggregatedMeasureService.GetAll();
-		return Ok(result.Select(AggregatedMeasureConverter.ConvertToPresentation));
+		IReadOnlyCollection<AggregatedMeasure> result = aggregatedMeasureService.GetAll();
+		return result.Select(AggregatedMeasureConverter.ConvertToPresentation);
 	}
 
 	// TODO хочу подписываться и отписываться сразу на несколько штук
 	[HttpPost("sensor_subscription/{sensorId:guid}")]
-	public IActionResult SubscribeToSensor(Guid sensorId)
+	public void SubscribeToSensor(Guid sensorId)
 	{
 		aggregatedMeasureService.SubscribeSensor(sensorId);
-		return Ok();
 	}
 
 	[HttpDelete("sensor_subscription/{sensorId:guid}")]
-	public IActionResult UnsubscribeFromSensor(Guid sensorId)
+	public void UnsubscribeFromSensor(Guid sensorId)
 	{
 		aggregatedMeasureService.UnsubscribeSensor(sensorId);
-		return Ok();
 	}
 }

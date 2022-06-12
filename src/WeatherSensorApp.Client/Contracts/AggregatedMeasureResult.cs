@@ -4,7 +4,9 @@ public class AggregatedMeasureResult
 {
 	public Guid SensorId { get; init; }
 
-	public DateTime AggregatedMinute { get; init; }
+	public DateTime AggregatedStartTime { get; init; }
+	
+	public DateTime AggregatedEndTime { get; init; }
 
 	public decimal MeanTemperature { get; init; }
 

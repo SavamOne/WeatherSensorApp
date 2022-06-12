@@ -2,5 +2,5 @@
 
 public class ServerAddressOptions
 {
-	public string ServerAddress { get; set; }
+	public string ServerAddress { get; set; } = null!;
 }
