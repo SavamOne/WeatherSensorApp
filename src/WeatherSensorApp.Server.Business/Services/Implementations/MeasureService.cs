@@ -24,7 +24,7 @@ public class MeasureService : IMeasureService
 		this.logger = logger;
 	}
 
-	public void OnNewMeasure(Measure measure)
+	public void OnNewMeasure(Measure measure, CancellationToken stoppingToken)
 	{
 		if (!sensors.ContainsKey(measure.SensorId))
 		{
@@ -32,21 +32,26 @@ public class MeasureService : IMeasureService
 		}
 
 		lastMeasureStore.UpdateLastMeasure(measure);
-
+		
 		foreach (MeasureSubscription subscription in subscriptionStore.GetSubscriptions(measure.SensorId))
 		{
-			if (subscription.CancellationToken.IsCancellationRequested)
+			_ = Task.Run(async () =>
 			{
-				logger.LogInformation("Removed subscription");
-				subscriptionStore.RemoveSubscription(subscription.SensorId, subscription.Id);
-				continue;
-			}
-
-			Task.Run(async () => await subscription.Callback(measure));
+				using CancellationTokenSource source = CancellationTokenSource.CreateLinkedTokenSource(subscription.CancellationToken, stoppingToken);
+				
+				if (source.IsCancellationRequested)
+				{
+					logger.LogInformation("Removed subscription");
+					subscriptionStore.RemoveSubscription(subscription.SensorId, subscription.Id);
+					return;
+				}
+				
+				await subscription.Callback(measure, source.Token);
+			}, CancellationToken.None);
 		}
 	}
-
-	public Guid SubscribeToMeasures(Guid sensorId, Func<Measure, Task> callback, CancellationToken cancellationToken)
+	
+	public Guid SubscribeToMeasures(Guid sensorId, Func<Measure, CancellationToken, Task> callback, CancellationToken cancellationToken)
 	{
 		if (!sensors.ContainsKey(sensorId))
 		{

@@ -83,7 +83,7 @@ public class MeasureApiService : MeasureSubscriptionService.MeasureSubscriptionS
 
 		if (request.Subscribe && !containsSub)
 		{
-			sensorSubscriptionIds[sensorId] = service.SubscribeToMeasures(sensorId, async measure => await OnNewMeasure(measure, cancellationToken), cancellationToken);
+			sensorSubscriptionIds[sensorId] = service.SubscribeToMeasures(sensorId, OnNewMeasure, cancellationToken);
 			logger.LogDebug("Subscribed!");
 		}
 		else if (!request.Subscribe && containsSub)

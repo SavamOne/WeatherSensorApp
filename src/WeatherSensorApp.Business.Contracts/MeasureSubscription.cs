@@ -5,7 +5,7 @@ public class MeasureSubscription : IEquatable<MeasureSubscription>
 	public MeasureSubscription(Guid id,
 		Guid sensorId,
 		CancellationToken cancellationToken,
-		Func<Measure, Task> callback)
+		Func<Measure, CancellationToken, Task> callback)
 	{
 		Id = id;
 		SensorId = sensorId;
@@ -19,7 +19,7 @@ public class MeasureSubscription : IEquatable<MeasureSubscription>
 
 	public CancellationToken CancellationToken { get; }
 
-	public Func<Measure, Task> Callback { get; }
+	public Func<Measure, CancellationToken, Task> Callback { get; }
 
 	public bool Equals(MeasureSubscription? other)
 	{

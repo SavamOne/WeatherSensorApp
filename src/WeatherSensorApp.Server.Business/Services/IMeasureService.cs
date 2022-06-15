@@ -4,9 +4,9 @@ namespace WeatherSensorApp.Server.Business.Services;
 
 public interface IMeasureService
 {
-	void OnNewMeasure(Measure measure);
+	void OnNewMeasure(Measure measure, CancellationToken cancellationToken);
 
-	Guid SubscribeToMeasures(Guid sensorId, Func<Measure, Task> callback, CancellationToken cancellationToken);
+	Guid SubscribeToMeasures(Guid sensorId, Func<Measure, CancellationToken, Task> callback, CancellationToken cancellationToken);
 
 	void UnsubscribeFromMeasures(Guid sensorId, Guid subscriptionId);
 

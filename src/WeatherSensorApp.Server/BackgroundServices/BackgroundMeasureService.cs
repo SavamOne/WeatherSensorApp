@@ -34,7 +34,7 @@ public class BackgroundMeasureService : BackgroundService
 				_ = Task.Run(() =>
 				{
 					Measure randomMeasure = MeasureGenerator.GenerateRandom(sensor.Id);
-					measureService.OnNewMeasure(randomMeasure);
+					measureService.OnNewMeasure(randomMeasure, stoppingToken);
 				}, stoppingToken);
 			}
 
